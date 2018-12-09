@@ -5,10 +5,10 @@
  * Time: 20:21
  */
 
-function inset_val(&$Zaehler,&$conn) {
+function inset_val(&$Zaehler,&$conn,$ip_addr,$object_id1,$object_id2) {
 
-    $Name = snmp2_walk("192.168.0.115", "public", ".1.3.6.1.2.1.1.5");
-    $Ort  = snmp2_walk("192.168.0.115", "public", ".1.3.6.1.2.1.1.6");
+    $Name = snmp2_walk($ip_addr, "public", $object_id1);
+    $Ort  = snmp2_walk($ip_addr, "public", $object_id2);
 
     $Name = explode(" ",$Name[0]);
     $Ort = explode(" ",$Ort[0]);
@@ -61,25 +61,36 @@ function get_conn_read($s_name,$u_name,$pwd){
     $conn_read->next_result();
     return $conn_read;
 }
+function data_from_Abfrage_to_test(&$conn) {
+    $sql = "SELECT * FROM abfrage";
+    $result = $conn->query($sql);
 
+    if ($result->num_rows > 0) {
+        // output data of each row
+        while($row = $result->fetch_assoc()) {
+            echo "\nName: " . $row["Name"]. " - Ort: " . $row["ORT"]. " - Ip-Adresse " . $row["IP-Adresse"]. "<br>";
+            inset_val($count,$conn,$row["IP-Adresse"],$row["Name"], $row["ORT"]);
+            $conn->next_result();
+        }
+    } else {
+        echo "0 results";
+    }
+}
+
+#VARIABLEN
 $servername = "localhost";
 $username = "root";
 $password = "";
-$zaehler = 0;
+#VARIABLEN
 
+#ESTABLISH CONNECTIONS
 $conn_write = get_conn_write($servername,$username,$password);
 $conn_read = get_conn_read($servername,$username,$password);
+#ESTABLISH CONNECTIONS
 
+data_from_Abfrage_to_test($conn_read);
 
-$conn_write->next_result();
-inset_val($zaehler,$conn_write);
-
-$sql_read  = "SELECT * FROM Abfrage;";
-
-$read_result_count_rows = $conn_read->query($sql_read);
-
-$zaehler = $read_result_count_rows->num_rows;
-
-echo "\n\n\n" . $zaehler;
-
+#CLOSE CONNECTIONS
 $conn_write->close();
+$conn_read->close();
+#CLOSE CONNECTIONS
