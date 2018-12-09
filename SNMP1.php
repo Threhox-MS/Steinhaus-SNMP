@@ -30,29 +30,29 @@ $username = "root";
 $password = "";
 $Zaehler = 0;
 
-$conn = new mysqli($servername, $username, $password);
+$conn_write = new mysqli($servername, $username, $password);
+$conn_read  = new mysqli($servername, $username, $password);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (!$conn_write->connect_error && !$conn_read->connect_error) {
+    echo "Connected successfully";
 }
-echo "Connected successfully";
+else
+die("Connection failed: " . $conn_write->connect_error);
 
 
 $sql = "use drucker;TRUNCATE TABLE `test`;";
 
-if ($conn->multi_query($sql) === TRUE) {
+if ($conn_write->multi_query($sql) === TRUE) {
     echo "\nHat funktioniert";
 } else {
-    echo "\nNe hat nicht" . $conn->error;
+    echo "\nNe hat nicht" . $conn_write->error;
 }
-$conn->next_result();
-#mysqli_free_result($test);
-inset_val($Zaehler,$conn);
-$conn->next_result();
-inset_val($Zaehler,$conn);
-$conn->next_result();
-inset_val($Zaehler,$conn);
-$conn->next_result();
-inset_val($Zaehler,$conn);
+$conn_write->next_result();
+inset_val($Zaehler,$conn_write);
+$conn_write->next_result();
+inset_val($Zaehler,$conn_write);
+$conn_write->next_result();
+inset_val($Zaehler,$conn_write);
 
-$conn->close();
+
+$conn_write->close();
