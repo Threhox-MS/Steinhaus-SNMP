@@ -1,10 +1,12 @@
 <?php
+
 /**
  * Creator: Tim Weißenfels
  * Date: 08.12.2018
  * Time: 20:21
  */
 
+#FUNCTIONS
 function inset_val(&$Zaehler,&$conn,$ip_addr,$object_id1,$object_id2) {
 
     $Name = snmp2_walk($ip_addr, "public", $object_id1);
@@ -76,6 +78,7 @@ function data_from_Abfrage_to_test(&$conn) {
         echo "0 results";
     }
 }
+#FUNCTIONS
 
 #VARIABLEN
 $servername = "localhost";
@@ -85,7 +88,7 @@ $password = "";
 
 #ESTABLISH CONNECTIONS
 $conn_write = get_conn_write($servername,$username,$password);
-$conn_read = get_conn_read($servername,$username,$password);
+$conn_read  = get_conn_read($servername,$username,$password);
 #ESTABLISH CONNECTIONS
 
 data_from_Abfrage_to_test($conn_read);
