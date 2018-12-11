@@ -64,14 +64,14 @@ function get_conn_read($s_name,$u_name,$pwd){
     return $conn_read;
 }
 function data_from_Abfrage_to_test(&$conn) {
-    $sql = "SELECT * FROM abfrage";
+    $sql = "SELECT * FROM typzuoid";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
         // output data of each row
         while($row = $result->fetch_assoc()) {
-            echo "\nName: " . $row["Name"]. " - Ort: " . $row["ORT"]. " - Ip-Adresse " . $row["IP-Adresse"]. "<br>";
-            inset_val($count,$conn,$row["IP-Adresse"],$row["Name"], $row["ORT"]);
+            echo "\nName: " . $row["Name"]. " - Ort: " . $row["ORT"]. " - IP_Adresse " . $row["IP_Adresse"];
+            inset_val($count,$conn,$row["IP_Adresse"],$row["Name"], $row["ORT"]);
             $conn->next_result();
         }
     } else {
@@ -90,6 +90,13 @@ $password = "";
 $conn_write = get_conn_write($servername,$username,$password);
 $conn_read  = get_conn_read($servername,$username,$password);
 #ESTABLISH CONNECTIONS
+
+#UPDATE TABLE typzuoid column IP_ADRESSE
+$sql = "UPDATE typzuoid INNER JOIN resolve
+	SET typzuoid.IP_Adresse = resolve.IP_Adresse
+	WHERE typzuoid.Typ = resolve.Typ_Name;";
+$conn_read->query($sql);
+#UPDATE TABLE typzuoid column IP_ADRESSE
 
 data_from_Abfrage_to_test($conn_read);
 
