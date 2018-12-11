@@ -19,7 +19,7 @@ function inset_val(&$Zaehler,&$conn,$ip_addr,$object_id1,$object_id2) {
     $sql = "use drucker; INSERT INTO`test`(`Anzahl_Drucker`, `Name`, `ORT`)VALUES($Zaehler,'$Name[1]','$Ort[1]');";
 
     if ($conn->multi_query($sql) === TRUE) {
-        echo "\nZeile wurde hinzugefügt";
+        #echo "\nZeile wurde hinzugefügt";
     } else {
         echo "\nNZeile wurde nicht hinzugefügt" . $conn->error;
     }
@@ -58,7 +58,7 @@ function get_conn_read($s_name,$u_name,$pwd){
     if ($conn_read->query($sql_read) === TRUE) {
         echo "\n";
     } else {
-        echo "\nKonnte nicht gelöscht werden" . $conn_read->error;
+        echo "\nFEHLER" . $conn_read->error;
     }
     $conn_read->next_result();
     return $conn_read;
@@ -68,15 +68,15 @@ function data_from_Abfrage_to_test(&$conn) {
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        // output data of each row
         while($row = $result->fetch_assoc()) {
-            echo "\nName: " . $row["Name"]. " - Ort: " . $row["ORT"]. " - IP_Adresse " . $row["IP_Adresse"];
+            #echo "\nName: " . $row["Name"]. " - Ort: " . $row["ORT"]. " - IP_Adresse " . $row["IP_Adresse"];
             inset_val($count,$conn,$row["IP_Adresse"],$row["Name"], $row["ORT"]);
             $conn->next_result();
         }
     } else {
         echo "0 results";
     }
+    return $result->num_rows;
 }
 #FUNCTIONS
 
@@ -84,6 +84,7 @@ function data_from_Abfrage_to_test(&$conn) {
 $servername = "localhost";
 $username = "root";
 $password = "";
+$zaehler = 0;
 #VARIABLEN
 
 #ESTABLISH CONNECTIONS
@@ -98,7 +99,62 @@ $sql = "UPDATE typzuoid INNER JOIN resolve
 $conn_read->query($sql);
 #UPDATE TABLE typzuoid column IP_ADRESSE
 
-data_from_Abfrage_to_test($conn_read);
+$zaehler = data_from_Abfrage_to_test($conn_read);
+
+#UGLY HTML
+echo "<html lang=\"de\">
+
+<head>
+    <style>
+        #customers {
+            font-family: \"Trebuchet MS\", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #customers td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+        #customers tr:hover {background-color: #ddd;}
+
+        #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+<table id=\"customers\">
+    <tr>
+        <th>Anzahl</th>
+        <th>Name</th>
+        <th>Ort</th>";
+        $sql = "SELECT * FROM test;";
+        $result = $conn_write->query($sql);
+if ($result->num_rows > 0) {
+    while($row = $result->fetch_assoc()) {
+        echo "<tr>" . "<td>" . $row["Anzahl_Drucker"]. "</td>" . "<td>" . $row["Name"]. "</td>" . "<td>" . $row["ORT"]. "</td>" . "</tr>";
+    }
+} else {
+    echo "0 results"; }
+        echo"
+    </tr>
+
+</table>
+
+</body>
+
+</body>
+</html>";
+#UGLY HTML
 
 #CLOSE CONNECTIONS
 $conn_write->close();
